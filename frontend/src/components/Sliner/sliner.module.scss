@@ -1,0 +1,28 @@
+.wrap-sliner {
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+    .sliner {
+        width: 800px;
+        img {
+            height: 235px;
+            width: 100%;
+            border-top-left-radius: 2px;
+            border-bottom-left-radius: 2px;
+
+        }
+    }
+    .slider-extra {
+        display: block;
+        width:400px;
+        margin-left: 3.2px;
+        img {
+            display: block;
+            margin-bottom: 5px;
+            width: 400px;
+            height: 115px;
+            border-top-right-radius: 2px;
+            border-bottom-right-radius: 2px;
+        }
+    }
+}
