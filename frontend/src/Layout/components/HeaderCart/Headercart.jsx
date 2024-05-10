@@ -1,24 +1,24 @@
-import style from './header.module.scss';
+import style from './Headercart.module.scss';
 import classNames from 'classnames/bind';
 import qrcode from '~/assets/img/qr.png';
 import appstore from '~/assets/img/appstore.png';
 import chplay from '~/assets/img/ggplay.png';
 import avt from '~/assets/img/obito.png';
-import images from '~/assets/img';
 import { Link } from 'react-router-dom';
-
 
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faFacebook, faInstagram } from '@fortawesome/free-brands-svg-icons';
 import { faBell } from '@fortawesome/free-regular-svg-icons';
-import { faCartShopping, faChevronDown, faCircleQuestion, faGlobe, faSearch } from '@fortawesome/free-solid-svg-icons';
+import { faChevronDown, faCircleQuestion, faGlobe, } from '@fortawesome/free-solid-svg-icons';
 const cx = classNames.bind(style);
 
-function Header() {
+
+function HeaderCart() {
     return (
-        <div className={cx('header')}>
-            <div className={cx('container')}>
+        <div className={cx("wrap-content")}>
+            <div className='container'>
+
                 <div className={cx('header-top')}>
                     <div className={cx('header-top__contacts')}>
                         <div className={cx('contacts-item')}>
@@ -100,62 +100,11 @@ function Header() {
                         </div>
                     </div>
                 </div>
-                <div className={cx('header-bottom')}>
-                    <Link to="/" className={cx('logo')}>
-                        <img src={images.logo} alt='logo' />
-                    </Link>
-                    <div className={cx('header-search')}>
-                        <div className={cx('wrap-input')}>
-                            <input className={cx('input-search')} placeholder='Tìm kiếm sản phẩm' />
-                            <button className={cx('btn-search')} >
-                                <FontAwesomeIcon icon={faSearch} />
-                            </button>
-                        </div>
-                        <ul className={cx('history-search')}>
-                            <li>
-                                <a href=' #'>
-                                    san pham 1
-                                </a>
-                            </li>
-                            <li>
-                                <a href=' #'>
-                                    san pham 2
-                                </a>
-                            </li>
-                            <li>
-                                <a href=' #'>
-                                    san pham 3
-                                </a>
-                            </li>
-                            <li>
-                                <a href=' #'>
-                                    san pham 4
-                                </a>
-                            </li>
-                            <li>
-                                <a href=' #'>
-                                    san pham 5
-                                </a>
-                            </li>
-                            <li>
-                                <a href=' #'>
-                                    san pham 6
-                                </a>
-                            </li>
-                            <li>
-                                <a href=' #'>
-                                    san pham 7
-                                </a>
-                            </li>
-                        </ul>
-                    </div>
-                    <div className={cx('header-cart')}>
-                        <FontAwesomeIcon icon={faCartShopping} />
-                    </div>
-                </div>
             </div>
+
         </div>
+
     );
 }
 
-export default Header;
+export default HeaderCart;

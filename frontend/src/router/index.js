@@ -4,6 +4,7 @@ import Products from '~/Pages/Products';
 import Profile from '~/Pages/Profile';
 import Login from '~/Pages/Login';
 import Register from '~/Pages/register';
+import Cart from '~/Pages/cart';
 
 
 
@@ -13,6 +14,8 @@ const publicRoutes = [
     { path: '/profile', components: Profile },
     { path: '/login', components: Login },
     { path: '/register', components: Register },
+    { path: '/cart', components: Cart },
+
 
 ];
 const privateRoutes = []
