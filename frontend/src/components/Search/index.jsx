@@ -16,7 +16,7 @@ function Search() {
 
     useEffect(() => {
         setTimeout(() => {
-            setSearchResult([1, 2, 3]);
+            setSearchResult([]);
         }, 0);
     }, []);
 
@@ -32,7 +32,7 @@ function Search() {
             placement='bottom-start'
             render={(attrs) => (
                 <div className={cx('search-result')} tabIndex="-1" {...attrs}>
-                    <PopperWrapper>
+                    <PopperWrapper className="w-[600px]">
                         <div className="">iphone12</div>
                         <div className="">iphone11</div>
                         <div className="">iphone6</div>

@@ -4,27 +4,41 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEye, faEyeSlash } from '@fortawesome/free-regular-svg-icons';
 import images from '~/assets/img';
 import { faFacebook, faGoogle } from '@fortawesome/free-brands-svg-icons';
-import { Link } from 'react-router-dom'
+import { Link, Navigate } from 'react-router-dom'
+import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 function Login() {
     const { register, handleSubmit, formState: { errors } } = useForm({
         defaultValues: {
-            Email: '',
+            email: '',
             PassWord: ''
         }
     });
+    const navigate = useNavigate();
 
     const [showPassword, setShowPassword] = useState(false);
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const onSubmit = (data) => {
-        console.log(data);
+    const onSubmit = async (data) => {
+        try {
+            console.log(data);
+            const response = await axios.post('http://localhost:3003/api/auth/login', data, {
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+            console.log('Đăng ký thành công:', response.data);
+            navigate('/');
+        } catch (error) {
+            console.error('Lỗi khi đăng ký:', error.response ? error.response.data : error.message);
+        }
     };
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
 
-        if (name === "Email") {
+        if (name === "email") {
             setEmail(value);
         } else if (name === "PassWord") {
             setPassword(value);
@@ -70,7 +84,7 @@ function Login() {
                                     <input
 
                                         className="block p-3 bg-[#fff] w-[338px] h-[40px]"
-                                        {...register("Email", {
+                                        {...register("email", {
                                             required: true,
                                             pattern: /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/,
                                             onChange: handleInputChange
@@ -100,6 +114,7 @@ function Login() {
                                     type="submit"
                                     disabled={isButtonDisabled}
                                     className={`bg-[#ee4d2d] text-[#fff] w-[100%] h-[40px] mt-[32px] rounded ${isButtonDisabled ? 'opacity-70 cursor-not-allowed' : 'cursor-pointer'}`}
+
                                 >
                                     Đăng nhập
                                 </button>

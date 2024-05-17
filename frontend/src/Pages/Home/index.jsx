@@ -11,8 +11,11 @@ import categoryArray from '~/data/categories';
 import img from '~/assets/img';
 import { products } from '~/assets/img/importImages';
 import { faChevronLeft, faChevronRight } from '@fortawesome/free-solid-svg-icons';
+import { storage } from '~/config/firebaseConfig';
+import { ref, getDownloadURL } from 'firebase/storage';
 const cx = classNames.bind(styles);
 const imageKeys = Object.keys(products);
+
 
 function Home() {
 	const [endTime] = useState(moment().add(2, 'days').add(12, 'hours').add(0, 'minutes'));
@@ -45,6 +48,14 @@ function Home() {
 		setTransformValue("translate(0px, 0px)");
 	}
 	useEffect(() => {
+		const getImage = async () => {
+			const imageRef = ref(storage, "newFireBase/test1.png");
+			const imageUrl = await getDownloadURL(imageRef);
+			console.log(imageUrl);
+		}
+		getImage()
+
+
 		const timer = setInterval(() => {
 			setTimeLeft(calculateTimeLeft());
 		}, 1000);

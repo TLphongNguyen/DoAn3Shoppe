@@ -4,6 +4,9 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import images from '~/assets/img';
 import { faFacebook, faGoogle } from '@fortawesome/free-brands-svg-icons';
 import { Link } from 'react-router-dom'
+import axios from 'axios';
+import Snackbar from '@mui/material/Snackbar';
+import Alert from '@mui/material/Alert';
 
 function Register() {
     const { register, handleSubmit, formState: { errors } } = useForm({
@@ -16,6 +19,9 @@ function Register() {
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
     const [checked, setChecked] = useState(true);
+    const [open, setOpen] = useState(false);
+    const [openEz, setOpenEZ] = useState(false);
+
 
     const handlePasswordChange = (e) => {
         setPassword(e.target.value);
@@ -33,15 +39,68 @@ function Register() {
             setChecked(false);
         }
     };
-    const onSubmit = (data) => {
-        console.log(data);
+    const handleClick = () => {
+        setOpen(true);
+    }
+    const errorMessage = () => {
+        setOpenEZ(true)
+    }
+    const onSubmit = async (data) => {
+        try {
+            const response = await axios.post('http://localhost:3003/api/auth/register', data, {
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+            handleClick()
+            console.log('Đăng ký thành công:', response.data);
+        } catch (error) {
+            errorMessage()
+            console.error('Lỗi khi đăng ký:', error.response ? error.response.data : error.message);
+        }
     };
+
+
+
+    const handleClose = (event, reason) => {
+        if (reason === 'clickaway') {
+            return;
+        }
+
+        setOpen(false);
+        setOpenEZ(false);
+    };
+
 
 
 
 
     return (
         <div>
+            <Snackbar open={open} autoHideDuration={6000} onClose={handleClose} anchorOrigin={{ vertical: 'top', horizontal: 'right' }}>
+                <Alert
+
+                    onClose={handleClose}
+                    severity="success"
+                    variant="filled"
+                    sx={{ width: '100%' }}
+
+                >
+                    Đăng ký thành công!
+                </Alert>
+            </Snackbar>
+            <Snackbar open={openEz} autoHideDuration={6000} onClose={handleClose} anchorOrigin={{ vertical: 'top', horizontal: 'right' }}>
+                <Alert
+
+                    onClose={handleClose}
+                    severity="error"
+                    variant="filled"
+                    sx={{ width: '100%' }}
+
+                >
+                    Đăng ký thất bại!
+                </Alert>
+            </Snackbar>
             <div className="flex w-[1200px] justify-between margin-auto h-[84px] items-center">
                 <div className="flex items-center">
                     <img className="w-[192px] h-[42px]" src={images.logologin} alt="anh logo" />
@@ -60,13 +119,13 @@ function Register() {
 
                         </div>
                         <div className="px-[30px] pb-[30px]">
-                            <form onSubmit={handleSubmit(onSubmit)}>
+                            <form method='POST' onSubmit={handleSubmit(onSubmit)}>
 
                                 <div className="border-[1px] border-solid border-[#00000024] rounded-[4px] focus:border-[#0000008a] overflow-hidden " >
                                     <input
 
                                         className="block p-3 bg-[#fff] w-[338px] h-[40px]"
-                                        {...register("Email", {
+                                        {...register("email", {
                                             required: true,
                                             pattern: /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/
                                         })}
@@ -109,6 +168,7 @@ function Register() {
                                 <button
                                     type="submit"
                                     className={'bg-[#ee4d2d] text-[#fff] w-[100%] h-[40px] mt-[32px] rounded '}
+
                                 >
                                     Đăng ký
                                 </button>

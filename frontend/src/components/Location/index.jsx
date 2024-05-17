@@ -1,18 +1,21 @@
 import { useState } from "react";
-import { faPlus } from "@fortawesome/free-solid-svg-icons";
+import { faPlus, faSearch } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
-import Button from '@mui/material/Button';
 import TextField from "@mui/material/TextField";
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
-import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from '@mui/material/DialogTitle';
 
 
 
 function Location() {
     const [open, setOpen] = useState(false);
+    const [activeIndex, setActiveIndex] = useState(0);
+
+    const handleItemClick = (index) => {
+        setActiveIndex(index);
+    };
 
     const handleClickOpen = () => {
         setOpen(true);
@@ -108,24 +111,52 @@ function Location() {
                                 />
                             </div>
                         </div>
-                        <div className="flex-1">
+                        <div className="flex-1 flex items-end">
 
                             <TextField
                                 autoFocus
                                 required
                                 margin="dense"
                                 id="name"
-                                name="numberPhone"
-                                label="Số điện thoại"
+                                name="location"
+                                label="Tỉnh thành phố , Quận/Huyện, Phường/Xã"
                                 type="text"
                                 fullWidth
                                 variant="standard"
+                                iconStyle=""
+
                             />
+                            <FontAwesomeIcon className="mr-8 mb-3" icon={faSearch} />
+                        </div>
+                        <div className="max-h-[280px] h-[280px]">
+                            <div className="flex justify-center items-center border-[1px] border-solid border-[#00000024]">
+                                <div
+                                    className={`py-[15px] px-[2px] text-center w-[146px] cursor-pointer text-[14px] ${activeIndex === 0 ? 'active' : ''}`}
+                                    onClick={() => handleItemClick(0)}
+                                    style={{ color: activeIndex === 0 ? '#ee4d2d' : '#000000cc', borderBottom: activeIndex === 0 ? '2px solid #ee4d2d' : 'none' }}
+                                >
+                                    Tỉnh/Thành phố
+                                </div>
+                                <div
+                                    className={`py-[15px] px-[2px] text-center w-[146px] cursor-pointer text-[14px] ${activeIndex === 1 ? 'active' : ''}`}
+                                    onClick={() => handleItemClick(1)}
+                                    style={{ color: activeIndex === 1 ? '#ee4d2d' : '#000000cc', borderBottom: activeIndex === 1 ? '2px solid #ee4d2d' : 'none' }}
+                                >
+                                    Quận/Huyện
+                                </div>
+                                <div
+                                    className={`py-[15px] px-[2px] text-center w-[146px] cursor-pointer text-[14px] ${activeIndex === 2 ? 'active' : ''}`}
+                                    onClick={() => handleItemClick(2)}
+                                    style={{ color: activeIndex === 2 ? '#ee4d2d' : '#000000cc', borderBottom: activeIndex === 2 ? '2px solid #ee4d2d' : 'none' }}
+                                >
+                                    Phường/ Xã
+                                </div>
+                            </div>
                         </div>
                     </DialogContent>
                     <DialogActions>
-                        <Button onClick={handleClose}>Cancel</Button>
-                        <Button type="submit">Subscribe</Button>
+                        <button className="text-[#555] min-w-[140px] text-[14px] p-[10px] cursor-pointer" onClick={handleClose}>Trở lại</button>
+                        <button className="text-[#fff] bg-[#ee4d2d] min-w-[140px] text-[14px] p-[10px] cursor-pointer" type="submit">Hoàn thành</button>
                     </DialogActions>
 
                 </div>

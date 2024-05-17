@@ -12,7 +12,7 @@ import Search from '~/components/Search';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faFacebook, faInstagram } from '@fortawesome/free-brands-svg-icons';
 import { faBell } from '@fortawesome/free-regular-svg-icons';
-import { faCartShopping, faChevronDown, faCircleQuestion, faGlobe, faSearch } from '@fortawesome/free-solid-svg-icons';
+import { faCartShopping, faChevronDown, faCircleQuestion, faGlobe } from '@fortawesome/free-solid-svg-icons';
 const cx = classNames.bind(style);
 
 function Header() {
@@ -147,6 +147,24 @@ function Header() {
                     </div>
                     <div className={cx('header-cart')}>
                         <FontAwesomeIcon icon={faCartShopping} />
+                        <div className={cx("wrap-cart")}>
+                            <h4 className={cx("cart-title")}>Sản phẩm mới thêm</h4>
+                            <ul className={cx("list-cart")}>
+                                <li className={cx("item-cart")}>
+                                    <img src={images.iphone1} alt="anh gio hang" />
+                                    <div className={cx("cart-info")}>
+                                        <span className={cx("cart-name")}>Apple iPhone 15 Pro Max 256GB Chính hãng VN/A</span>
+                                        <span className={cx("cart-price")}>₫30.590.000</span>
+                                    </div>
+                                </li>
+                            </ul>
+                            <div className={cx("btn-cart")}>
+                                <div className="flex-1"></div>
+                                <button>
+                                    xem giỏ hàng
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>

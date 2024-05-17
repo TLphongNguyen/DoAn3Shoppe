@@ -1,0 +1,146 @@
+datasource db {
+  provider = "mysql"
+  url      = "mysql://root:28062003@localhost:3306/doan3"
+}
+generator client {
+  provider = "prisma-client-js"
+}
+// Định nghĩa model Loaitaikhoa
+model AccountType {
+  accountTypeId Int    @id @default(autoincrement())
+  accountTypeName String
+  account       Account[]
+}
+
+model Account {
+  accountId     Int      @id @default(autoincrement())
+  username      String
+  password      String
+  accountTypeId Int
+  Salt          String
+  accountType   AccountType @relation(fields: [accountTypeId], references: [accountTypeId])
+  customers     Customer[]
+  purchaseOrder PurchaseOrder[]
+}
+
+model Customer {
+  customerId Int      @id @default(autoincrement())
+  accountId  Int
+  fullName   String
+  birthday   DateTime
+  email      String
+  address    String
+  account    Account  @relation(fields: [accountId], references: [accountId])
+  bill       Bill[]
+  shoppingCart ShoppingCart[]
+}
+
+model Brand {
+  brandId   Int    @id @default(autoincrement())
+  brandName String
+  brandLogo String
+  phones    Phone[]
+}
+
+model Phone {
+  phoneId      Int      @id @default(autoincrement())
+  brandId      Int
+  phoneName    String
+  price        Int
+  discount     Int 
+  quantity     Int
+  phoneImage   String
+  phoneImages  String
+  status       Boolean  @default(true)
+  brand        Brand    @relation(fields: [brandId], references: [brandId])
+  phoneDetails PhoneDetail[]
+  billdetails  BillDetail[]
+  purchaseOrderDetail PurchaseOrderDetail[]
+  shoppingCart ShoppingCart[]
+}
+
+model OperatingSystem {
+  osId   Int    @id @default(autoincrement())
+  osName String
+  phoneDetail  PhoneDetail[]
+}
+
+model Bill {
+  orderId        Int      @id @default(autoincrement())
+  orderDate      DateTime
+  customerId     Int
+  customerName   String
+  shippingAddress String
+  phoneNumber    String
+  status         Boolean
+  customer       Customer @relation(fields: [customerId], references: [customerId])
+  billDetails    BillDetail[]
+}
+
+model BillDetail {
+  orderDetailId Int   @id @default(autoincrement())
+  orderId       Int
+  phoneId       Int
+  quantity      Int
+  unitPrice     Int
+  order         Bill  @relation(fields: [orderId], references: [orderId])
+  phone         Phone @relation(fields: [phoneId], references: [phoneId])
+}
+
+model Supplier {
+  supplierId     Int      @id @default(autoincrement())
+  supplierName   String
+  supplierPhone  String
+  supplierAddress String
+  status         Boolean  @default(true)
+  purchaseOrders PurchaseOrder[]
+}
+
+model PurchaseOrder {
+  purchaseOrderId Int      @id @default(autoincrement())
+  accountId       Int
+  supplierId      Int
+  orderDate       DateTime
+  account         Account  @relation(fields: [accountId], references: [accountId])
+  supplier        Supplier @relation(fields: [supplierId], references: [supplierId])
+  purchaseOrderDetails PurchaseOrderDetail[]
+}
+
+model PurchaseOrderDetail {
+  purchaseOrderDetailId Int   @id @default(autoincrement())
+  purchaseOrderId       Int
+  phoneId               Int
+  quantity              Int
+  unitPrice             Int
+  purchaseOrder         PurchaseOrder @relation(fields: [purchaseOrderId], references: [purchaseOrderId])
+  phone                 Phone         @relation(fields: [phoneId], references: [phoneId])
+}
+
+model ShoppingCart {
+  cartItemId Int      @id @default(autoincrement())
+  customerId Int
+  phoneId    Int
+  quantity   Int
+  customer   Customer @relation(fields: [customerId], references: [customerId])
+  phone      Phone    @relation(fields: [phoneId], references: [phoneId])
+}
+
+model PhoneDetail {
+  phoneId            Int      @id
+  osId               Int
+  screenSize         Float
+  resolution         String
+  processor          String
+  RAM                Int
+  ROM                Int
+  batteryCapacity    Int
+  mainCameraResolution String
+  frontCameraResolution String
+  phone              Phone    @relation(fields: [phoneId], references: [phoneId])
+  operatingSystem    OperatingSystem @relation(fields: [osId], references: [osId])
+}
+
+
+
+
+

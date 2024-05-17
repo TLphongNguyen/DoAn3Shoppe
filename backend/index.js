@@ -1,16 +1,28 @@
+const { PrismaClient } = require('@prisma/client');
+const express = require('express');
+const app = express();
+const PORT = process.env.PORT || 3003;
+const rootRouter = require("./src/routes")
+const cors = require('cors');
+app.use(cors({ credentials: true, origin: "http://localhost:3000" }));
+// Khởi tạo PrismaClient
+const prismaClient = new PrismaClient({
+  log: ['query'],
+});
+app.use(express.json());
+// Sử dụng middleware cho router
+app.use("/api", rootRouter);
 
-import express from 'express'
-import morgan from 'morgan'
-import ExpressHandlebars from 'express-handlebars'
-import { sql, connect } from 'connect'
-const app = express()
-const port = 3000
-app.engine('handlebars', ExpressHandlebars())
-app.set('view engine', 'handlebars')
-app.get('/', (req, res) => {
-    res.send('Hello World!')
+app.get('/hello', function (req, res) {
+  res.send("<h2>This is my first app</h2>");
 })
+process.on('SIGINT', async () => {
+  await prisma.$disconnect();
+  process.exit(0);
+});
 
-app.listen(port, () => {
-    console.log(`Example app listening on port ${port}`)
-})
+app.listen(PORT, () => {
+  console.log(`Listening on port ${PORT}`);
+
+});
+module.exports = prismaClient
