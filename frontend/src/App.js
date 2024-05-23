@@ -1,6 +1,6 @@
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom'
 import { publicRoutes } from '~/router';
-import { DefaultLayout } from '~/Layout';
+import { DefaultLayout, AdminLayout } from '~/Layout';
 import { Fragment } from 'react';
 function App() {
   return (
@@ -8,10 +8,10 @@ function App() {
       <div className='app'>
         <Routes>
           {publicRoutes.map((route, index) => {
-            const Page = route.components
-            let Layout = DefaultLayout
-            if (route.layout) {
-              Layout = route.layout
+            const Page = route.components;
+            let Layout = DefaultLayout; // Sử dụng layout mặc định
+            if (route.layout === 'admin') {
+              Layout = AdminLayout; // Sử dụng layout cho phần quản trị
             }
             else if (route.layout === null) {
               Layout = Fragment

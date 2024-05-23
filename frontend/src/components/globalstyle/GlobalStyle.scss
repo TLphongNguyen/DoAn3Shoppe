@@ -52,6 +52,9 @@ input,
     border: none;
     background: none;
 }
+label {
+    display: block;
+}
 ul {
     list-style: none;
     display: flex;

@@ -1,7 +1,7 @@
 import { useForm } from 'react-hook-form'
 import { useState, useRef, useEffect } from "react";
 import imgAvt from "~/assets/img/obito.png";
-function Info() {
+function Info({ customer }) {
     const [image, setImage] = useState(null);
     const fileInputRef = useRef(null);
 
@@ -52,7 +52,7 @@ function Info() {
                                         </span>
                                     </div>
                                     <div className="pl-[20px] text-[14px] text-[#333]">
-                                        <span>mrphong2806</span>
+                                        <span></span>
                                     </div>
                                 </li>
                                 <li className="flex pb-[30px] items-center">
@@ -70,7 +70,7 @@ function Info() {
                                         <span>Email</span>
                                     </div>
                                     <div className="ml-[20px] shadow-[0px_2px_0px_0.02_rgba(0,0,0,1)] border-[#00000024] border-[1px] border-solid rounded-[2px] h-[40px] w-[418px]">
-                                        <input className="p-3 h-[100%] w-[100%]" type="email" {...register("Email", { required: true })} placeholder="nhập email của bạn" />
+                                        <input className="p-3 h-[100%] w-[100%]" value="" type="email" {...register("Email", { required: true })} placeholder="nhập email của bạn" />
                                     </div>
                                 </li>
                                 <li className="flex pb-[30px] items-center">

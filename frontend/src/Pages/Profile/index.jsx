@@ -3,14 +3,17 @@ import Info from "~/components/Info";
 import Location from "~/components/Location";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useState } from "react";
-import imgAvt from "~/assets/img/obito.png";
+import { useRecoilValue } from 'recoil';
+import { customerState } from '~/Recoil/customer';
 import { faClipboardList, faHandHoldingDollar, faPen, faTicket } from "@fortawesome/free-solid-svg-icons";
 import { faBell, faUser } from "@fortawesome/free-regular-svg-icons";
+
 function Profile() {
     const [selectedProfileContent, setSelectedProfileContent] = useState(<Info />);
     const handleMenuItemClick = (content) => {
         setSelectedProfileContent(content);
     };
+    const customer = useRecoilValue(customerState);
 
     return (
         <div>
@@ -19,9 +22,9 @@ function Profile() {
                 <div className="flex container pt-[20px] pb-[50px] h-[100%] ">
                     <div className="w-[180px]">
                         <div className="flex py-[15px] border-[1px] border-solid border-[#efefef]">
-                            <img className="w-[48px] h-[48px] rounded-[50%] object-cover cursor-pointer" src={imgAvt} alt="anh avarta" />
+                            <img className="w-[48px] h-[48px] rounded-[50%] object-cover cursor-pointer" src={customer.avt} alt="anh avarta" />
                             <div className="pl-[15px]">
-                                <span className="text-[#333] text-[14px] mb-[5px] font-[600]">Phong Nguyen</span>
+                                <span className="text-[#333] text-[14px] mb-[5px] font-[600]">{customer.fullName}</span>
                                 <div className="text-[#9b9b9b] text-[14px] cursor-pointer">
                                     <FontAwesomeIcon className=" mr-1" icon={faPen} />
                                     <span>Sửa Hồ Sơ</span>

@@ -27,6 +27,7 @@ model Customer {
   customerId Int      @id @default(autoincrement())
   accountId  Int
   fullName   String
+  avt        String
   birthday   DateTime
   email      String
   address    String

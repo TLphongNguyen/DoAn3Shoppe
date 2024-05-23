@@ -4,7 +4,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEye, faEyeSlash } from '@fortawesome/free-regular-svg-icons';
 import images from '~/assets/img';
 import { faFacebook, faGoogle } from '@fortawesome/free-brands-svg-icons';
-import { Link, Navigate } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
@@ -28,6 +28,10 @@ function Login() {
                     'Content-Type': 'application/json'
                 }
             });
+            const token = response.data;
+
+            // Lưu token vào local storage hoặc state của ứng dụng
+            localStorage.setItem('token', token);
             console.log('Đăng ký thành công:', response.data);
             navigate('/');
         } catch (error) {

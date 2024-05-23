@@ -216,9 +216,13 @@
     margin: 0 10px;
     height: 100%;
     margin: auto 0;
+    cursor: pointer;
     svg {
         color : #fff;
         font-size: 20px;
+    }
+    &:hover .wrap-cart {
+        display: block;
     }
 }
 .wrap-cart {
@@ -229,7 +233,16 @@
     background-color: #fff;
     border-radius: 2px;
     box-shadow: 0 1px 3.125rem 0 rgba(0, 0, 0, .2);
-    overflow: hidden;
+    display: none;
+    &::before {
+        content: "";
+        position: absolute;
+        border-bottom: 20px solid rgb(255, 255, 255);
+        border-left: 20px solid transparent;
+        border-right: 20px solid transparent;
+        right: 10px;
+        top: -14px;
+    }
 }
 .cart-title {
     height: 40px;

@@ -3,19 +3,49 @@ import classNames from 'classnames/bind';
 import qrcode from '~/assets/img/qr.png';
 import appstore from '~/assets/img/appstore.png';
 import chplay from '~/assets/img/ggplay.png';
-import avt from '~/assets/img/obito.png';
+
 import images from '~/assets/img';
 import { Link } from 'react-router-dom';
 import Search from '~/components/Search';
-
+import axios from 'axios';
+import { useEffect } from 'react';
+import { useRecoilState } from 'recoil';
+import { customerState } from '~/Recoil/customer';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faFacebook, faInstagram } from '@fortawesome/free-brands-svg-icons';
 import { faBell } from '@fortawesome/free-regular-svg-icons';
 import { faCartShopping, faChevronDown, faCircleQuestion, faGlobe } from '@fortawesome/free-solid-svg-icons';
+
 const cx = classNames.bind(style);
 
 function Header() {
+    const [customer, setCustomer] = useRecoilState(customerState);
+
+    useEffect(() => {
+        const fetchCustomer = async () => {
+            try {
+                const token = localStorage.getItem('token');
+                const response = await axios.get("http://localhost:3003/api/auth/customer", {
+                    headers: {
+                        authorization: token
+                    }
+                });
+                setCustomer(response.data);
+                localStorage.setItem('customer', JSON.stringify(response.data));
+            } catch (error) {
+                console.error('Error fetching customer:', error);
+                setCustomer(null);
+            }
+        };
+        fetchCustomer();
+    }, [setCustomer]);
+    const handleLogout = () => {
+        localStorage.removeItem('token');
+        setCustomer(null);
+        localStorage.removeItem('customer');
+
+    };
     return (
         <div className={cx('header')}>
             <div className={cx('container')}>
@@ -67,36 +97,44 @@ function Header() {
                         </div>
 
                         <div className={cx("wraper-profile")}>
-                            <div className={cx("wrap-img")}>
-                                <img src={avt} alt='avt' />
-                            </div>
-                            <div className={cx("user-name")}>
-                                phong nguyen
-                            </div>
-                            <div className={cx("wrap-profile__more")}>
-                                <ul>
-                                    <Link to="/profile" >
-                                        <li>
-
-                                            Tài Khoản của tôi
-                                        </li>
+                            {customer ? (
+                                <>
+                                    <div className={cx("wrap-img")}>
+                                        <img src={customer.avt} alt='avatar' />
+                                    </div>
+                                    <div className={cx("user-name")}>
+                                        {customer.fullName}
+                                    </div>
+                                    <div className={cx("wrap-profile__more")}>
+                                        <ul>
+                                            <Link to="/profile" >
+                                                <li>
+                                                    Tài Khoản của tôi
+                                                </li>
+                                            </Link>
+                                            <Link to="/orders">
+                                                <li>
+                                                    Đơn mua
+                                                </li>
+                                            </Link>
+                                            <Link to="/register">
+                                                <li onClick={handleLogout}>
+                                                    Đăng xuất
+                                                </li>
+                                            </Link>
+                                        </ul>
+                                    </div>
+                                </>
+                            ) : (
+                                <div className={cx("guest-options")}>
+                                    <Link to="/login">
+                                        <button className='text-[#fff] mr-2'>Đăng nhập</button>
                                     </Link>
-
-                                    <Link>
-                                        <li>
-
-                                            Đơn mua
-                                        </li>
+                                    <Link to="/register">
+                                        <button className='text-[#fff] mr-2'>Đăng ký</button>
                                     </Link>
-                                    <Link to="/login" >
-                                        <li>
-
-                                            Đăng xuất
-                                        </li>
-                                    </Link>
-
-                                </ul>
-                            </div>
+                                </div>
+                            )}
                         </div>
                     </div>
                 </div>
@@ -106,7 +144,6 @@ function Header() {
                     </Link>
                     <div className={cx('header-search')}>
                         <Search />
-
                         <ul className={cx('history-search')}>
                             <li>
                                 <a href=' #'>
