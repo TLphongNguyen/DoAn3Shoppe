@@ -20,7 +20,6 @@ model Account {
   Salt          String
   accountType   AccountType @relation(fields: [accountTypeId], references: [accountTypeId])
   customers     Customer[]
-  purchaseOrder PurchaseOrder[]
 }
 
 model Customer {
@@ -31,8 +30,10 @@ model Customer {
   birthday   DateTime
   email      String
   address    String
+  numberPhone String
   account    Account  @relation(fields: [accountId], references: [accountId])
   bill       Bill[]
+  purchaseOrder PurchaseOrder[]
   shoppingCart ShoppingCart[]
 }
 
@@ -51,7 +52,7 @@ model Phone {
   discount     Int 
   quantity     Int
   phoneImage   String
-  phoneImages  String
+  phoneImages  String  @db.Text
   status       Boolean  @default(true)
   brand        Brand    @relation(fields: [brandId], references: [brandId])
   phoneDetails PhoneDetail[]
@@ -99,10 +100,10 @@ model Supplier {
 
 model PurchaseOrder {
   purchaseOrderId Int      @id @default(autoincrement())
-  accountId       Int
+  customerId       Int
   supplierId      Int
   orderDate       DateTime
-  account         Account  @relation(fields: [accountId], references: [accountId])
+  customer         Customer  @relation(fields: [customerId], references: [customerId])
   supplier        Supplier @relation(fields: [supplierId], references: [supplierId])
   purchaseOrderDetails PurchaseOrderDetail[]
 }

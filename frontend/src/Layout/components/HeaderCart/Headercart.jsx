@@ -3,22 +3,29 @@ import classNames from 'classnames/bind';
 import qrcode from '~/assets/img/qr.png';
 import appstore from '~/assets/img/appstore.png';
 import chplay from '~/assets/img/ggplay.png';
-import avt from '~/assets/img/obito.png';
-import { Link } from 'react-router-dom';
-
-
+import { Link, Navigate } from 'react-router-dom'; // Import useHistory
+import { customerState } from '~/Recoil/customer';
+import { useRecoilValue } from 'recoil';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faFacebook, faInstagram } from '@fortawesome/free-brands-svg-icons';
 import { faBell } from '@fortawesome/free-regular-svg-icons';
-import { faChevronDown, faCircleQuestion, faGlobe, } from '@fortawesome/free-solid-svg-icons';
+import { faChevronDown, faCircleQuestion, faGlobe } from '@fortawesome/free-solid-svg-icons';
+
 const cx = classNames.bind(style);
 
-
 function HeaderCart() {
+    const customer = useRecoilValue(customerState);
+
+    const handleLogout = () => {
+        localStorage.removeItem('token');
+        localStorage.removeItem('customer');
+        localStorage.removeItem('storeCart');
+    };
+
+
     return (
         <div className={cx("wrap-content")}>
             <div className='container'>
-
                 <div className={cx('header-top')}>
                     <div className={cx('header-top__contacts')}>
                         <div className={cx('contacts-item')}>
@@ -67,43 +74,45 @@ function HeaderCart() {
                         </div>
 
                         <div className={cx("wraper-profile")}>
-                            <div className={cx("wrap-img")}>
-                                <img src={avt} alt='avt' />
-                            </div>
-                            <div className={cx("user-name")}>
-                                phong nguyen
-                            </div>
-                            <div className={cx("wrap-profile__more")}>
-                                <ul>
-                                    <Link to="/profile" >
-                                        <li>
+                            {customer ? (
+                                <>
+                                    <div className={cx("wrap-img")}>
+                                        <img src={customer.avt} alt='avatar' />
+                                    </div>
+                                    <div className={cx("user-name")}>
+                                        {customer.fullName}
+                                    </div>
+                                    <div className={cx("wrap-profile__more")}>
+                                        <ul>
+                                            <Link to="/profile" >
+                                                <li>
+                                                    Tài Khoản của tôi
+                                                </li>
+                                            </Link>
+                                            <Link to="/cart">
+                                                <li>
+                                                    Đơn mua
+                                                </li>
+                                            </Link>
+                                            <Link to="/register">
+                                                <li onClick={handleLogout}>
+                                                    Đăng xuất
+                                                </li>
+                                            </Link>
+                                        </ul>
+                                    </div>
+                                </>
+                            ) : (
+                                <Navigate to="/login" className={cx("guest-options")}>
 
-                                            Tài Khoản của tôi
-                                        </li>
-                                    </Link>
+                                </Navigate>
+                            )}
 
-                                    <Link>
-                                        <li>
-
-                                            Đơn mua
-                                        </li>
-                                    </Link>
-                                    <Link to="/login" >
-                                        <li>
-
-                                            Đăng xuất
-                                        </li>
-                                    </Link>
-
-                                </ul>
-                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-
         </div>
-
     );
 }
 

@@ -31,7 +31,7 @@ function Login() {
             const token = response.data;
 
             // Lưu token vào local storage hoặc state của ứng dụng
-            localStorage.setItem('token', token);
+            sessionStorage.setItem('token', token);
             console.log('Đăng ký thành công:', response.data);
             navigate('/');
         } catch (error) {

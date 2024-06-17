@@ -12,7 +12,7 @@ const footerArray = Object.keys(footers);
 function Footer() {
 	return (
 		<aside className={cx('wrapper')}>
-			<div className=" pt-12 container mt-5">
+			<div className=" pt-12 container mt-5 border-t-[4px] border-[#ee4d2d] border-solid">
 				<ul className="grid grid-cols-5 ">
 					<li>
 						<h3 className="text-[12px] text-[#000000de] font-[700] mt-5 mb-5">CHĂM SÓC KHÁCH HÀNG</h3>

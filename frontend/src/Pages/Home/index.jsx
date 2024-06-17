@@ -9,18 +9,22 @@ import moment from 'moment';
 import React, { useState, useEffect } from 'react';
 import categoryArray from '~/data/categories';
 import img from '~/assets/img';
-import { products } from '~/assets/img/importImages';
 import { faChevronLeft, faChevronRight } from '@fortawesome/free-solid-svg-icons';
 import { storage } from '~/config/firebaseConfig';
 import { ref, getDownloadURL } from 'firebase/storage';
+import axios from 'axios';
+import { SERVICE_URL } from '~/config';
+import ItemProducts from '~/components/itemProduct';
+import { Link } from 'react-router-dom';
 const cx = classNames.bind(styles);
-const imageKeys = Object.keys(products);
 
 
 function Home() {
 	const [endTime] = useState(moment().add(2, 'days').add(12, 'hours').add(0, 'minutes'));
 	const [timeLeft, setTimeLeft] = useState(calculateTimeLeft());
 	const [transformValue, setTransformValue] = useState("translate(0px, 0px)");
+	const [dataProducts, setDataProducts] = useState([]);
+
 
 	function calculateTimeLeft() {
 		const now = moment();
@@ -47,22 +51,45 @@ function Home() {
 	const prevClick = () => {
 		setTransformValue("translate(0px, 0px)");
 	}
-	useEffect(() => {
-		const getImage = async () => {
-			const imageRef = ref(storage, "newFireBase/test1.png");
-			const imageUrl = await getDownloadURL(imageRef);
-			console.log(imageUrl);
+
+	const fetchData = async () => {
+		try {
+			const response = await axios.get(`${SERVICE_URL}/getproductactive`);
+			const products = response.data;
+			// Lấy địa chỉ ảnh từ Firebase Storage cho mỗi category
+			const productsWithImages = await Promise.all(products.map(async (product) => {
+				// Tạo một hàm hỗ trợ để tải lên ảnh lên Firebase Storage và lấy URL
+				const uploadImageToFirebase = async (imageField) => {
+					if (product[imageField]) {
+						const imageRef = ref(storage, `products/${product[imageField]}`);
+						const imageUrl = await getDownloadURL(imageRef);
+						return imageUrl;
+					}
+					return null;
+				};
+
+				// Lấy URL của phoneImage
+				const phoneImageUrl = await uploadImageToFirebase('phoneImg');
+				const phoneImageUrls = await uploadImageToFirebase('phoneImgs');
+
+				// Lấy URL của phoneImages
+
+
+				// Trả về sản phẩm với thêm thông tin ảnh
+				return {
+					...product,
+					phoneImageUrl,
+					phoneImageUrls
+				};
+			}));
+			setDataProducts(productsWithImages);
+		} catch (error) {
+			console.error('Có lỗi xảy ra khi lấy dữ liệu:', error);
 		}
-		getImage()
-
-
-		const timer = setInterval(() => {
-			setTimeLeft(calculateTimeLeft());
-		}, 1000);
-
-		return () => clearInterval(timer);
-	}, []);
-
+	};
+	useEffect(() => {
+		fetchData()
+	}, [])
 	return (
 		<div className={cx('wrap-content')}>
 			<Header />
@@ -141,23 +168,11 @@ function Home() {
 							<h1>Gợi ý hôm nay</h1>
 						</div>
 						<ul className={cx('list-products')}>
-							{imageKeys.map((key, index) => (
-								<li key={index} className={cx(`item-products`)}>
-									<div className={cx('wrap-item')}>
-										<img src={products[key]} alt="anh1" />
-										<span className={cx('name-product')}>ao khoac1</span>
-										<div className={cx('info-sell')}>
-											<div className={cx('price-product')}>
-												₫<span>29.000</span>
-											</div>
-											<div className={cx('selled')}>
-												Đã bán
-												<span>1.5k</span>
-											</div>
-										</div>
-										<div className={cx('seller')}>-50%</div>
-									</div>
-								</li>
+							{dataProducts.map((item, index) => (
+								<Link to={`/products/?id=${item.phoneId}`} className="item-product">
+									<ItemProducts Name={item.phoneName} index={index} img={item.phoneImage} price={item.price} quantitySelled={item.quantity} discount={item.discount} />
+
+								</Link>
 							))}
 						</ul>
 					</div>

@@ -29,7 +29,7 @@ function SideBar() {
     };
 
     return (
-        <Card className="h-[calc(100vh-2rem)] w-full max-w-[20rem] p-4 shadow-xl shadow-blue-gray-900/5 border-t-[1px] border-solid border-[#ccc]">
+        <Card className="h-[100%] w-full max-w-[20rem] p-4 border-t-[1px] border-solid border-[#ccc] ">
             <div className="mb-2 p-4">
                 <Typography variant="h5" color="blue-gray">
                     Trang quản trị
@@ -99,35 +99,45 @@ function SideBar() {
                     </ListItem>
                     <AccordionBody className="py-1">
                         <List className="p-0">
-                            <ListItem Link to="/admin/category">
-                                <ListItemPrefix>
-                                    <ChevronRightIcon strokeWidth={3} className="h-3 w-5" />
-                                </ListItemPrefix>
-                                Category
-                            </ListItem>
-                            <ListItem Link to="/admin/products">
-                                <ListItemPrefix>
-                                    <ChevronRightIcon strokeWidth={3} className="h-3 w-5" />
-                                </ListItemPrefix>
-                                Products
+                            <ListItem>
+                                <Link Link to="/admin/category" className="flex items-center">
+                                    <ListItemPrefix>
+                                        <ChevronRightIcon strokeWidth={3} className="h-3 w-5" />
+                                    </ListItemPrefix>
+                                    Category
+                                </Link>
                             </ListItem>
                             <ListItem>
-                                <ListItemPrefix>
-                                    <ChevronRightIcon strokeWidth={3} className="h-3 w-5" />
-                                </ListItemPrefix>
-                                Products
+                                <Link Link to="/admin/products" className="flex items-center">
+                                    <ListItemPrefix>
+                                        <ChevronRightIcon strokeWidth={3} className="h-3 w-5" />
+                                    </ListItemPrefix>
+                                    Products
+                                </Link>
                             </ListItem>
                             <ListItem>
-                                <ListItemPrefix>
-                                    <ChevronRightIcon strokeWidth={3} className="h-3 w-5" />
-                                </ListItemPrefix>
-                                Products
+                                <Link Link to="/admin/bills" className="flex items-center">
+                                    <ListItemPrefix>
+                                        <ChevronRightIcon strokeWidth={3} className="h-3 w-5" />
+                                    </ListItemPrefix>
+                                    Bills
+                                </Link>
                             </ListItem>
                             <ListItem>
-                                <ListItemPrefix>
-                                    <ChevronRightIcon strokeWidth={3} className="h-3 w-5" />
-                                </ListItemPrefix>
-                                Products
+                                <Link to="/admin/supplier " className="flex items-center">
+                                    <ListItemPrefix>
+                                        <ChevronRightIcon strokeWidth={3} className="h-3 w-5" />
+                                    </ListItemPrefix>
+                                    Supplier
+                                </Link>
+                            </ListItem>
+                            <ListItem>
+                                <Link to="/admin/importbills" className="flex items-center">
+                                    <ListItemPrefix>
+                                        <ChevronRightIcon strokeWidth={3} className="h-3 w-5" />
+                                    </ListItemPrefix>
+                                    importbills
+                                </Link>
                             </ListItem>
                         </List>
                     </AccordionBody>

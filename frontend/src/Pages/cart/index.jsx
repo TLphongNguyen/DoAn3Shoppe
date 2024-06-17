@@ -1,23 +1,68 @@
-import { useState } from "react";
+// import { useEffect, useState } from "react";
 import HeaderCart from "~/Layout/components/HeaderCart/Headercart";
 import Search from "~/components/Search";
+import { Link } from "react-router-dom";
 import images from "~/assets/img";
 import ship from "~/assets/img/more/ship.png";
-import sale from "~/assets/img/more/sale.png";
-import iphone from "~/assets/img/products/iphone15.png";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faBagShopping, faCaretDown, faMinus, faPlus } from "@fortawesome/free-solid-svg-icons";
+import CartComponent from "~/components/cart";
+import { customerState } from '~/Recoil/customer';
+import { useState, useEffect } from "react";
+import axios from "axios";
+import { SERVICE_URL } from "~/config";
+import { useRecoilValue } from 'recoil';
+import { formatCurrency } from "~/config/formatCurrency";
 function Cart() {
-    const [quantity, setQuantity] = useState(1)
 
-    const handleclickPrev = () => {
-        if (quantity > 1) {
-            setQuantity(quantity - 1)
+    const customer = useRecoilValue(customerState);
+    const [dataCart, setDataCart] = useState([]);
+    const [selectedItems, setSelectedItems] = useState([]);
+    const [selectedProducts, setSelectedProducts] = useState([]);
+    // console.log(dataCart);
+
+    const handleCheckboxChange = (index, isChecked, quantity, price) => {
+        if (isChecked) {
+            setSelectedItems(prevItems => [...prevItems, { index, quantity, price, }]);
+        } else {
+            setSelectedItems(prevItems => prevItems.filter(item => item.index !== index));
+        }
+    };
+    const getProductsFromSelectedItems = (dataCart, selectedItems) => {
+        return selectedItems.map(item => {
+            const product = dataCart.find(cartItem => cartItem.phoneId === item.index);
+            return { ...product, quantity: item.quantity, price: item.price };
+        });
+    };
+    const totalAmount = selectedItems.reduce((sum, item) => sum + (item.quantity * item.price), 0);
+    const handleSubmit = async () => {
+
+
+        const selectedProducts = getProductsFromSelectedItems(dataCart, selectedItems);
+        setSelectedProducts(selectedProducts);
+        sessionStorage.setItem('selectedPhone', JSON.stringify(selectedProducts));
+        sessionStorage.setItem('Totalamount', totalAmount);
+
+        // Perform the form submission or any other logic with the selected items here
+    };
+
+    const fetchdata = async () => {
+        try {
+            const id = customer.customerId
+            // console.log(id);
+            const response = await axios.get(`${SERVICE_URL}/getcart/${id}`);
+            setDataCart(response.data);
+            // console.log(response.data);
+            sessionStorage.setItem('storeCart', JSON.stringify(response.data));
+
+
+
+        } catch (error) {
+            console.error('Error fetching customer:', error);
+            setDataCart(null);
         }
     }
-    const handleclickIncrease = () => {
-        setQuantity(quantity + 1)
-    }
+    useEffect(() => {
+        fetchdata();
+    }, [])
     return (
         <div className="wrap-content">
             <HeaderCart />
@@ -57,93 +102,17 @@ function Cart() {
                         </ul>
                     </div>
                     <ul className="cart-list  block">
-                        <li className=" bg-[#fff] cart-item w-[100%] ">
-                            <div className="cart-item border-b-[1px] border-[#00000017] border-solid">
-                                <div className="cart-shop flex px-5 h-[60px] items-center">
-                                    <div className="checkboxGwap pl-5 pr-3 mr-2">
-                                        <input type="checkbox" name="" id="check-box" />
-                                    </div>
-                                    <span className="name-shop text-[14px] text-[#000000de] ml-2">
-                                        Viettel Store - AAR
-                                    </span>
-                                    <div className="cart-icon ml-2">
-                                        <FontAwesomeIcon className="text-[#ee4d2d]" icon={faBagShopping} />
-
-                                    </div>
-                                </div>
-                            </div>
-                            <div className="cart-prodcut mt-[15px] pt-[15px] px-5 pb-5 w-[100%]">
-                                <div className="product-item flex items-center">
-                                    <div className="checkboxGwap  pl-5 pr-3 mr-2">
-                                        <input type="checkbox" name="" id="check-box check-tf" />
-                                    </div>
-                                    <div className="product-gwap flex w-[29.03811%]">
-                                        <div className="product-img min-w-[80px] max-w-20 h-[80px]">
-                                            <img src={iphone} alt="" />
-                                        </div>
-                                        <div className="gwap-title">
-                                            <span className="product-title text-[14px] mb-1 line-clamp-2 leading-4">
-                                                Apple iPhone 15 Pro Max 256GB Chính hãng VN/A
-                                            </span>
-                                            <img src={sale} alt="" className="img-sale h-[18px]" />
-
-                                        </div>
-                                    </div>
-                                    <div className="product-category  w-[17.24138%]">
-                                        <span className="category block text-[#0000008a] text-[14px]">
-                                            Phân loại hàng
-                                            <FontAwesomeIcon className="ml-2" icon={faCaretDown} />
-                                        </span>
-                                        <span className="category-new text-[#0000008a] text-[14px]">
-                                            iphone
-                                        </span>
-                                    </div>
-                                    <div className="gwap-price w-[15.88022%] flex">
-                                        <div className="price-item">
-                                            <span className="price-old text-[#0000008a] text-[14px] line-through mr-[10px]">
-                                                37.790.000
-                                            </span>
-                                            {/* <span className="price-sale">
-                                                Giảm Giá 7%
-
-                                            </span> */}
-                                        </div>
-                                        <div className="price-item">
-                                            <span className="price-new text-[#000000de] text-[14px]">
-                                                ₫30.590.000
-                                            </span>
-                                            {/* <div className="price-update">
-                                                Đã Cập Nhật
-                                            </div> */}
-                                        </div>
-                                    </div>
-                                    <div className="gwap-number w-[ 15.4265%]">
-                                        <div className="quantity">
-                                            <div className="mr-[15px]">
-                                                <button onClick={handleclickPrev} className="border-[1px] border-[#00000017] border-solid h-8 w-8 rounded-[2px]"><FontAwesomeIcon className="text-[14px]" icon={faMinus} /></button>
-                                                <input className="h-8 w-[50px] border-[1px] border-[#00000017] border-solid text-center" value={quantity} type="text" />
-                                                <button onClick={handleclickIncrease} className="border-[1px] border-[#00000017] border-solid h-8 w-8 rounded-[2px]"><FontAwesomeIcon className="text-[14px]" icon={faPlus} /></button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div className="into-money">
-                                        <span className="price-now text-[#ee4d2d] text-[14px]">₫30.590.000</span>
-                                    </div>
-                                    <div className="delete-search w-[12.70417%]">
-                                        <span className="delete-cart block text-center text-[14px] cursor-pointer hover:text-[#ee4d2d]">
-                                            Xóa
-                                        </span>
-                                        <a href=" #" className="link-pay flex justify-center">
-                                            <button className="buy-now text-[14px] text-center text-[#ee4d2d]">
-                                                Tìm sản phẩm tương tự
-                                            </button>
-
-                                        </a>
-                                    </div>
-                                </div>
-                            </div>
-
-                        </li>
+                        {dataCart.map((item, index) => (
+                            <CartComponent
+                                key={index}
+                                index={item.phone.phoneId}
+                                name={item.phone.phoneName}
+                                img={item.phone.phoneImage}
+                                price={item.phone.price}
+                                sale={item.phone.discount}
+                                onCheckboxChange={handleCheckboxChange}
+                            />
+                        ))}
 
                     </ul>
                     <div className="payload flex justify-between p-[20px] bg-[#fff] mt-5">
@@ -153,8 +122,8 @@ function Cart() {
                         </div>
                         <div className="">
                             <span className="text-[16px] leading-[19px] text-[#222]">Tổng sản phẩm(0 sản phẩm):</span>
-                            <span className="text-[24px] ml-[6px] leading-7 text-[#ee4d2d]">₫0</span>
-                            <button className="w-[210px] bg-[#ee4d2d] text-[#fff] py-[12px] px-[36px] rounded-[2px] ml-[22px]"> mua ngay</button>
+                            <span className="text-[24px] ml-[6px] leading-7 text-[#ee4d2d]">{formatCurrency(totalAmount)}</span>
+                            <Link to="/payload"><button onClick={handleSubmit} className="w-[210px] bg-[#ee4d2d] text-[#fff] py-[12px] px-[36px] rounded-[2px] ml-[22px]"> mua ngay</button></Link>
                         </div>
                     </div>
                 </div>

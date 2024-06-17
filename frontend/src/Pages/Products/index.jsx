@@ -1,17 +1,38 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faAngleRight, faCartPlus, faChevronDown, faMinus, faPlus, faShop, faStar, faTruckFast } from "@fortawesome/free-solid-svg-icons";
+import { Link } from "react-router-dom";
 import { faHeart, faMessage } from "@fortawesome/free-regular-svg-icons";
-
-import { useState } from "react";
-import images from "~/assets/img";
+import { customerState } from '~/Recoil/customer';
+import cartAtom from "~/Recoil/cart"
+import { useRecoilValue, useRecoilState } from 'recoil';
+import { useEffect, useState } from "react";
 import avt from '~/assets/img/obito.png';
 import shoppemall from '~/assets/img/products/shopeemall.png';
-
+import axios from "axios";
+import { useLocation } from 'react-router-dom';
 import Header from '~/Layout/components/Header';
+import { SERVICE_URL } from "~/config";
+import { formatCurrency } from '~/config/formatCurrency';
+import NotificationSnackbar from "~/components/NotificationSnackbar";
 import { faFacebook, faFacebookMessenger, faPinterest, faTwitterSquare } from "@fortawesome/free-brands-svg-icons";
-
+function useQuery() {
+    return new URLSearchParams(useLocation().search);
+}
 function Products() {
     const [quantity, setQuantity] = useState(1)
+    const [data, setData] = useState([])
+    const [detail, setDetail] = useState([])
+    const [openSuccess, setOpenSuccess] = useState(false);
+    const [openError, setOpenError] = useState(false);
+    const [cart, setCart] = useRecoilState(cartAtom);
+
+    const handleClose = (event, reason) => {
+        if (reason === 'clickaway') {
+            return;
+        }
+        setOpenSuccess(false);
+        setOpenError(false);
+    };
     const handleclickPrev = () => {
         if (quantity > 1) {
             setQuantity(quantity - 1)
@@ -20,8 +41,70 @@ function Products() {
     const handleclickIncrease = () => {
         setQuantity(quantity + 1)
     }
+
+    const query = useQuery();
+    const id = query.get('id');
+    const fetchdata = async () => {
+        try {
+
+            const response = await axios.get(`${SERVICE_URL}/products/${id}`);
+            setData(response.data);
+
+            setDetail(response.data.phoneDetails[0])
+
+            // console.log(data.phoneDetails[0]);
+        } catch (error) {
+            console.error('Error fetching customer:', error);
+            setData(null);
+        }
+    };
+    // fetchdata();
+    useEffect(() => {
+        fetchdata();
+    }, [])
+    const customer = useRecoilValue(customerState);
+    // console.log(customer.customerId);
+    const handleSubmid = async (idProduct, quantity) => {
+        console.log(idProduct, quantity);
+        try {
+            const response = await axios.post(`${SERVICE_URL}/createcart`, {
+                idUser: customer.customerId,
+                idProduct: idProduct,
+                quantity: quantity
+            }, {
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            });
+
+            if (response.status === 200) {
+                setOpenSuccess(true);
+                setCart((oldCart) => [
+                    ...oldCart,
+                    { idProduct, quantity },
+                ]);
+            }
+            console.log(cart);
+
+        } catch (error) {
+            console.error('Lỗi khi thêm vào giỏ hàng:', error);
+            setOpenError(true)
+        }
+    }
     return (
         <div className="">
+            <NotificationSnackbar
+                open={openSuccess}
+                onClose={handleClose}
+                severity="success"
+                message="Thêm sản phẩm vào giỏ hàng thành công!"
+            />
+            <NotificationSnackbar
+                open={openError}
+                onClose={handleClose}
+                severity="error"
+                message="thêm sản phẩm vào giỏ hàng thất bại!"
+            />
             <Header />
             <div className="mt-[116px] bg-[#f5f5f5] pb-[50px] ">
                 <div className="container">
@@ -32,36 +115,36 @@ function Products() {
                         <FontAwesomeIcon className="mx-[5px]" icon={faAngleRight} />
                         <li className="text-[#05a] text-[14px]">Apple</li>
                         <FontAwesomeIcon className="mx-[5px]" icon={faAngleRight} />
-                        <span className="text-[14px] text-[#000000cc]">Điện thoại Apple iPhone 15 Pro Max 256GB</span>
+                        <span className="text-[14px] text-[#000000cc]">{data.phoneName}</span>
 
                     </ul>
                     <div className="bg-[#fff] ">
                         <div className=" flex">
                             <div className="product-img w-[40%] p-[15px]">
                                 <div className="img-main w-[450px] h-[450px]">
-                                    <img src={images.iphone} alt="anh dien thoai" />
+                                    <img src={data.phoneImage} alt="anh dien thoai" />
                                 </div>
                                 <ul className="list-img my-[5px] items-center ">
                                     <li className="p-[5px] hover:border-[1px] border-[solid] border-[#ee4d2d] cursor-pointer">
-                                        <img src={images.iphone1} alt="" />
+                                        <img src={data.phoneImages} alt="" />
                                     </li>
                                     <li className="p-[5px] hover:border-[1px] border-[solid] border-[#ee4d2d] cursor-pointer">
-                                        <img src={images.iphone1} alt="" />
+                                        <img src={data.phoneImages} alt="" />
                                     </li>
                                     <li className="p-[5px] hover:border-[1px] border-[solid] border-[#ee4d2d] cursor-pointer">
-                                        <img src={images.iphone1} alt="" />
+                                        <img src={data.phoneImages} alt="" />
                                     </li>
                                     <li className="p-[5px] hover:border-[1px] border-[solid] border-[#ee4d2d] cursor-pointer">
-                                        <img src={images.iphone1} alt="" />
+                                        <img src={data.phoneImages} alt="" />
                                     </li>
                                     <li className="p-[5px] hover:border-[1px] border-[solid] border-[#ee4d2d] cursor-pointer">
-                                        <img src={images.iphone1} alt="" />
+                                        <img src={data.phoneImages} alt="" />
                                     </li>
                                 </ul>
                             </div>
                             <div className="product-info pr-[35px] pt-5 pl-5 w-[60%]">
                                 <div className="header">
-                                    <h1>Điện thoại Apple iPhone 15 Pro Max 256GB</h1>
+                                    <h1>{data.phoneName}</h1>
                                     <div className="flex justify-between mt-[10px]">
                                         <div className="flex">
                                             <div className="rating">
@@ -89,16 +172,16 @@ function Products() {
                                 <div className="price mt-[10px] bg-[#fafafa] flex py-[15px] px-[20px] items-center">
                                     <div className="mr-[10px] text-[#929292] text-4 line-through">₫
                                         <span>
-                                            34.999.000
+                                            {formatCurrency((data.price) * 1.1)}
                                         </span>
                                     </div>
-                                    <div className="text-[#d0011b] text-[30px] ">₫
+                                    <div className="text-[#d0011b] text-[30px] ">
                                         <span className="">
-                                            30.090.000
+                                            {formatCurrency(data.price)}
                                         </span>
                                     </div>
                                     <div className="ml-[15px] bg-[#d0011b] text-[#fff] text-[12px] px-[4px] py-[2px] leading-3">
-                                        30% giảm
+                                        {data.discount}% giảm
                                     </div>
                                 </div>
                                 <div className="tranf px-[20px]">
@@ -160,15 +243,15 @@ function Products() {
                                         <span className="">974 sản phẩm có sẵn</span>
                                     </div>
                                     <div className="gwap-btn mt-4">
-                                        <button className="add-cart bg-[#d0011b14] text-[#d0011b] border-[1px] border-[#d0011b] border-solid h-[48px] px-5 mr-4 rounded-[4px]">
+                                        <button onClick={() => handleSubmid()} className="add-cart bg-[#d0011b14] text-[#d0011b] border-[1px] border-[#d0011b] border-solid h-[48px] px-5 mr-4 rounded-[4px]">
                                             <FontAwesomeIcon className="mr-2" icon={faCartPlus} />
                                             thêm vào giỏ hàng
                                         </button>
-                                        <a href="# " className="link-cart">
-                                            <button className="buy-now bg-[#d0011b] h-[48px] px-5 text-[#fff] w-[180px] rounded-[4px]">
+                                        <Link to="/cart" className="link-cart">
+                                            <button onClick={() => handleSubmid()} className="buy-now bg-[#d0011b] h-[48px] px-5 text-[#fff] w-[180px] rounded-[4px]">
                                                 Mua ngay
                                             </button>
-                                        </a>
+                                        </Link>
                                     </div>
                                 </div>
                             </div>
@@ -269,6 +352,7 @@ function Products() {
                                 <h1 className="">CHI TIẾT SẢN PHẨM</h1>
                             </div>
                             <div className="mt-[30px] mx-[15px] mb-[15px]">
+
                                 <div className="flex mb-[18px]">
                                     <span className="w-[140px] pr-[12px] text-[14px] text-[#00000066]">Danh Mục</span>
                                     <ul className="items-center">
@@ -285,7 +369,7 @@ function Products() {
                                 </div>
                                 <div className="flex mb-[18px]">
                                     <span className="w-[140px] pr-[12px] text-[14px] text-[#00000066]">Dung lượng lưu trữ</span>
-                                    <span className="text-[#000000cc] text-[14px]">256GB</span>
+                                    <span className="text-[#000000cc] text-[14px]">{detail.ROM}</span>
                                 </div>
                                 <div className="flex mb-[18px]">
                                     <span className="w-[140px] pr-[12px] text-[14px] text-[#00000066]">Hạn bảo hành </span>
@@ -293,7 +377,7 @@ function Products() {
                                 </div>
                                 <div className="flex mb-[18px]">
                                     <span className="w-[140px] pr-[12px] text-[14px] text-[#00000066]">Model điện thoại</span>
-                                    <span className="text-[#000000cc] text-[14px]">iPhone 15 Pro Max 256GB</span>
+                                    <span className="text-[#000000cc] text-[14px]">{data.phoneName}</span>
                                 </div>
                                 <div className="flex mb-[18px]">
                                     <span className="w-[140px] pr-[12px] text-[14px] text-[#00000066]">Kho hàng</span>
@@ -317,7 +401,7 @@ function Products() {
                                     <p className="text-[#000000cc] text-[14px] leading-[1.7]">Thiết kế: Khung viền mới chất liệu Titanium -&nbsp;đạt kỷ lục viền máy siêu mảnh kết hợp 4 cạnh bo cong.</p>
                                     <p className="text-[#000000cc] text-[14px] leading-[1.7]">Màn hình: Độ sáng màn hình lên tới 2.000 nits&nbsp;đẳng cấp chưa từng thấy.</p>
                                     <p className="text-[#000000cc] text-[14px] leading-[1.7]">Camera: Ống kính tiềm vọng zoom 5x độc quyền&nbsp;cho khả năng thu phóng “đạt đỉnh”.</p>
-                                    <p className="text-[#000000cc] text-[14px] leading-[1.7]">Chipset: Vi xử lý A17 Pro ở tiến trình sản xuất 3nm&nbsp;giúp tốc độ xử lý và tối ưu điện năng tăng đột biến tới tới 35%.</p>
+                                    <p className="text-[#000000cc] text-[14px] leading-[1.7]">Chipset: Vi xử lý  ở tiến trình sản xuất 3nm&nbsp;giúp tốc độ xử lý và tối ưu điện năng tăng đột biến tới tới 35%.</p>
                                     <p className="text-[#000000cc] text-[14px] leading-[1.7]">Cổng sạc: “Khai tử” sạc Lightning, mở ra kỷ nguyên mới với USB type C&nbsp;cho khả năng truyền dữ liệu siêu tốc độ lên đến 10Gbps.</p>
                                     <p className="text-[#000000cc] text-[14px] leading-[1.7]">Nút tác vụ:&nbsp;“Xóa sổ” nút bật/tắt tiếng, thay thế bằng nút tác vụ&nbsp;hỗ trợ 9 chức năng khác nhau cho trải nghiệm sử dụng thêm thuận tiện</p>
                                     <p className="text-[#000000cc] text-[14px] leading-[1.7]">Màu sắc:&nbsp;Bảng màu mới lấy cảm hứng từ Titanium ấn tượng, độc đáo mang đến diện mạo sang chảnh và bắt mắt cho iPhone 15 Pro Max</p>

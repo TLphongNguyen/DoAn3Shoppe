@@ -5,6 +5,7 @@ import HeadlessTippy from '@tippyjs/react/headless';
 import classNames from 'classnames/bind';
 import { Wrapper as PopperWrapper } from '~/components/Popper';
 import styles from './Search.module.scss';
+import { useNavigate } from 'react-router-dom';
 const cx = classNames.bind(styles);
 
 function Search() {
@@ -19,6 +20,15 @@ function Search() {
             setSearchResult([]);
         }, 0);
     }, []);
+
+    const navigate = useNavigate();
+
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        if (searchValue.trim()) {
+            navigate(`/searchResult?name=${encodeURIComponent(searchValue)}`);
+        }
+    };
 
 
 
@@ -44,19 +54,21 @@ function Search() {
             )}
             onClickOutside={handleHideResult}
         >
-            <div className={cx('wrap-input')}>
-                <input
-                    ref={inputRef}
-                    value={searchValue} c
-                    className={cx('input-search')}
-                    placeholder='Tìm kiếm sản phẩm'
-                    spellCheck={false}
-                    onChange={(e) => setSearchValue(e.target.value)}
-                    onFocus={() => setShowResult(true)}
-                />
-                <button className={cx('btn-search')} >
-                    <FontAwesomeIcon icon={faSearch} />
-                </button>
+            <div >
+                <form onSubmit={handleSubmit} className={cx('wrap-input')}>
+                    <input
+                        ref={inputRef}
+                        value={searchValue} c
+                        className={cx('input-search')}
+                        placeholder='Tìm kiếm sản phẩm'
+                        spellCheck={false}
+                        onChange={(e) => setSearchValue(e.target.value)}
+                        onFocus={() => setShowResult(true)}
+                    />
+                    <button type='submit' className={cx('btn-search')} >
+                        <FontAwesomeIcon icon={faSearch} />
+                    </button>
+                </form>
             </div>
 
         </HeadlessTippy>

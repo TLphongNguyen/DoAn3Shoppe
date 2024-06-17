@@ -13,7 +13,6 @@ const middleware = async (req, res, next) => {
         const payload = jwt.verify(token, "abcxyz")
         const account = await prisma.customer.findFirst({ where: { accountId: payload.customerId } })
         req.customer = account
-        console.log(token);
         next()
     } catch (err) {
         next(new UnauthorizedException("Unauthorized", errorCode.UNAUTHORED))

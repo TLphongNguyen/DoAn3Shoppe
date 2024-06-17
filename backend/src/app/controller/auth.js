@@ -25,6 +25,7 @@ const signup = async (req, res, next) => {
                 birthday: new Date("1990-01-01"),
                 email: email, // Cập nhật email cho customer
                 address: "null",
+                numberPhone: "null",
                 avt: "https://i0.wp.com/sbcf.fr/wp-content/uploads/2018/03/sbcf-default-avatar.png?ssl=1",
                 account: {
                     create: {
@@ -57,7 +58,7 @@ const login = async (req, res) => {
             throw new Error
         }
         const Token = jwt.sign({ customerId: existingUser.accountId }, "abcxyz", {
-            expiresIn: '1h',
+            expiresIn: '8h',
         });
         // res.cookie('token', token, { httpOnly: true, secure: true, maxAge: 3600000 });
         // res.status(200).json({ message: "Login successful" });
@@ -72,4 +73,41 @@ const customer = async (req, res) => {
     res.json(req.customer)
 };
 
-module.exports = { signup, login, customer };
+const UpdateCustomer = async (req, res) => {
+    const { fullName, imageUrl, birthDate, email, numberPhone, customerId } = req.body
+    console.log(req.body);
+    try {
+        const update = await prisma.customer.update({
+            where: { customerId: customerId },
+            data: {
+                fullName: fullName,
+                avt: imageUrl,
+                birthday: new Date(birthDate),
+                email: email,
+                numberPhone: numberPhone
+            }
+        })
+        res.json(update)
+    } catch (error) {
+        console.log(error.message);
+    }
+}
+const UpdateAddress = async (req, res) => {
+    const { userName, numberPhone, location, customerId } = req.body;
+    console.log(customerId);
+    try {
+        const updateaddress = await prisma.customer.update({
+            where: { customerId: customerId },
+            data: {
+                fullName: userName,
+                numberPhone: numberPhone,
+                address: location
+            }
+        })
+        res.json(updateaddress);
+    } catch (err) {
+        console.log(err.message);
+    }
+}
+
+module.exports = { signup, login, customer, UpdateCustomer, UpdateAddress };

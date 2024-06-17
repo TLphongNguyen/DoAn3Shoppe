@@ -3,14 +3,17 @@ import classNames from 'classnames/bind';
 import qrcode from '~/assets/img/qr.png';
 import appstore from '~/assets/img/appstore.png';
 import chplay from '~/assets/img/ggplay.png';
-
+import { useState } from 'react';
 import images from '~/assets/img';
 import { Link } from 'react-router-dom';
 import Search from '~/components/Search';
 import axios from 'axios';
 import { useEffect } from 'react';
-import { useRecoilState } from 'recoil';
+import { useRecoilState, useRecoilValue } from 'recoil';
 import { customerState } from '~/Recoil/customer';
+import cartAtom from "~/Recoil/cart"
+import { formatCurrency } from '~/config/formatCurrency';
+import { SERVICE_URL } from '~/config';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faFacebook, faInstagram } from '@fortawesome/free-brands-svg-icons';
@@ -21,29 +24,61 @@ const cx = classNames.bind(style);
 
 function Header() {
     const [customer, setCustomer] = useRecoilState(customerState);
-
+    const [quantityCart, setQuantityCart] = useState()
+    const cart = useRecoilValue(cartAtom);
+    const [dataCart, setDataCart] = useState([]);
     useEffect(() => {
         const fetchCustomer = async () => {
             try {
-                const token = localStorage.getItem('token');
+                const token = sessionStorage.getItem('token');
                 const response = await axios.get("http://localhost:3003/api/auth/customer", {
                     headers: {
                         authorization: token
                     }
                 });
                 setCustomer(response.data);
-                localStorage.setItem('customer', JSON.stringify(response.data));
+                sessionStorage.setItem('customer', JSON.stringify(response.data));
             } catch (error) {
                 console.error('Error fetching customer:', error);
                 setCustomer(null);
             }
         };
         fetchCustomer();
+
     }, [setCustomer]);
+    const fetchdata = async () => {
+        try {
+            const id = customer.customerId
+            // console.log(id);
+            const response = await axios.get(`${SERVICE_URL}/getcart/${id}`);
+            setDataCart(response.data);
+            // console.log(response.data);
+            sessionStorage.setItem('storeCart', JSON.stringify(response.data));
+
+
+
+        } catch (error) {
+            console.error('Error fetching customer:', error);
+            setDataCart(null);
+        }
+    }
+    useEffect(() => {
+        fetchdata();
+    }, [])
+    useEffect(() => {
+        if (dataCart !== null) {
+            setQuantityCart(dataCart.length);
+
+        }
+        else {
+            setQuantityCart(0);
+        }
+    }, [dataCart]);
     const handleLogout = () => {
-        localStorage.removeItem('token');
+        sessionStorage.removeItem('token');
+        sessionStorage.removeItem('customer');
+        sessionStorage.removeItem('storeCart');
         setCustomer(null);
-        localStorage.removeItem('customer');
 
     };
     return (
@@ -112,12 +147,12 @@ function Header() {
                                                     Tài Khoản của tôi
                                                 </li>
                                             </Link>
-                                            <Link to="/orders">
+                                            <Link to="/cart">
                                                 <li>
                                                     Đơn mua
                                                 </li>
                                             </Link>
-                                            <Link to="/register">
+                                            <Link to="/login">
                                                 <li onClick={handleLogout}>
                                                     Đăng xuất
                                                 </li>
@@ -183,22 +218,35 @@ function Header() {
                         </ul>
                     </div>
                     <div className={cx('header-cart')}>
-                        <FontAwesomeIcon icon={faCartShopping} />
+                        <div className="cart-icon relative">
+                            <FontAwesomeIcon icon={faCartShopping} />
+                            <div className="cart-quantity absolute bg-[#fff] text-[#ee4d2d] w-[20px] top-[-12px] right-[-12px] text-center rounded-[50%] text-[14px] leading-5">{quantityCart}</div>
+
+                        </div>
                         <div className={cx("wrap-cart")}>
                             <h4 className={cx("cart-title")}>Sản phẩm mới thêm</h4>
                             <ul className={cx("list-cart")}>
-                                <li className={cx("item-cart")}>
-                                    <img src={images.iphone1} alt="anh gio hang" />
-                                    <div className={cx("cart-info")}>
-                                        <span className={cx("cart-name")}>Apple iPhone 15 Pro Max 256GB Chính hãng VN/A</span>
-                                        <span className={cx("cart-price")}>₫30.590.000</span>
-                                    </div>
-                                </li>
+                                {!dataCart || dataCart.length === 0 ? (
+                                    <div>Chưa có sản phẩm trong giỏ hàng</div>
+                                ) : (
+                                    dataCart.map((item) => (
+                                        <Link to={`/products/?id=${item.phoneId}`} className={cx("item-cart")} key={item.phoneId}>
+                                            <img src={item.phone.phoneImage} alt="anh gio hang" />
+                                            <div className={cx("cart-info")}>
+                                                <span className={cx("cart-name")}>{item.phone.phoneName}</span>
+                                                <span className={cx("cart-price")}>{formatCurrency(item.phone.price)}</span>
+                                            </div>
+                                        </Link>
+                                    ))
+                                )}
                             </ul>
                             <div className={cx("btn-cart")}>
                                 <div className="flex-1"></div>
                                 <button>
-                                    xem giỏ hàng
+                                    <Link to="/cart">
+                                        xem giỏ hàng
+
+                                    </Link>
                                 </button>
                             </div>
                         </div>

@@ -7,6 +7,7 @@ import { useRecoilValue } from 'recoil';
 import { customerState } from '~/Recoil/customer';
 import { faClipboardList, faHandHoldingDollar, faPen, faTicket } from "@fortawesome/free-solid-svg-icons";
 import { faBell, faUser } from "@fortawesome/free-regular-svg-icons";
+import Purchase from "~/components/purchase";
 
 function Profile() {
     const [selectedProfileContent, setSelectedProfileContent] = useState(<Info />);
@@ -18,7 +19,7 @@ function Profile() {
     return (
         <div>
             <Header />
-            <div className="mt-[120px] w-[100%] bg-[#f5f5f5] h-[600px]">
+            <div className="mt-[120px] w-[100%] bg-[#f5f5f5] h-auto">
                 <div className="flex container pt-[20px] pb-[50px] h-[100%] ">
                     <div className="w-[180px]">
                         <div className="flex py-[15px] border-[1px] border-solid border-[#efefef]">
@@ -69,7 +70,7 @@ function Profile() {
                                     </li>
                                 </ul>
                             </li>
-                            <li className="mb-4 cursor-pointer text-[14px] text-[#000000de] ">
+                            <li className="mb-4 cursor-pointer text-[14px] text-[#000000de] " onClick={() => handleMenuItemClick(<Purchase />)}>
                                 <FontAwesomeIcon className="text-[20px]  text-[#1a58b6] mr-[10px]" icon={faClipboardList} />
                                 Đơn mua
                             </li>
